@@ -184,8 +184,20 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
             >
               {msg.role === "assistant" && (
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(msg.content);
+                  onClick={async () => {
+                    const el = document.getElementById(`msg-${msg.id}`);
+                    if (el) {
+                      try {
+                        const html = el.innerHTML;
+                        const blob = new Blob([html], { type: "text/html" });
+                        const textBlob = new Blob([msg.content], { type: "text/plain" });
+                        await navigator.clipboard.write([
+                          new ClipboardItem({ "text/html": blob, "text/plain": textBlob })
+                        ]);
+                      } catch {
+                        navigator.clipboard.writeText(msg.content);
+                      }
+                    }
                     const btn = document.getElementById(`copy-${msg.id}`);
                     if (btn) { btn.textContent = "✓"; setTimeout(() => btn.textContent = "📋", 1500); }
                   }}
@@ -201,7 +213,7 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
                   {msg.slashCommand}
                 </div>
               )}
-              <div className={`text-sm prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : ""}`}>
+              <div id={`msg-${msg.id}`} className={`text-sm prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : ""}`}>
                 {msg.role === "assistant" ? (
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 ) : (
