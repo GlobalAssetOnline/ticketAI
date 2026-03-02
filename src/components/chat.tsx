@@ -197,22 +197,25 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
               {msg.role === "assistant" && (
                 <div className="mt-1.5 flex justify-start">
                   <button
-                    onClick={async (e) => {
+                    onClick={(e) => {
                       const btn = e.currentTarget;
                       const el = document.getElementById(`msg-${msg.id}`);
-                      if (el) {
-                        try {
-                          const html = el.innerHTML;
-                          const blob = new Blob([html], { type: "text/html" });
-                          const textBlob = new Blob([msg.content], { type: "text/plain" });
-                          await navigator.clipboard.write([
-                            new ClipboardItem({ "text/html": blob, "text/plain": textBlob })
-                          ]);
-                          btn.textContent = "✓ Copied";
-                        } catch {
-                          await navigator.clipboard.writeText(msg.content);
-                          btn.textContent = "✓ Copied";
+                      if (!el) return;
+                      try {
+                        // Select the rendered HTML content and copy via execCommand
+                        // (navigator.clipboard is blocked in cross-origin iframes)
+                        const range = document.createRange();
+                        range.selectNodeContents(el);
+                        const sel = window.getSelection();
+                        if (sel) {
+                          sel.removeAllRanges();
+                          sel.addRange(range);
+                          document.execCommand("copy");
+                          sel.removeAllRanges();
                         }
+                        btn.textContent = "✓ Copied";
+                      } catch {
+                        btn.textContent = "✗ Failed";
                       }
                       setTimeout(() => { btn.textContent = "📋 Copy"; }, 1500);
                     }}
