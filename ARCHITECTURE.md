@@ -94,7 +94,7 @@ Build LLM chat messages:
 OpenRouter API call (via OpenRouter-compatible SDK client)
   model: OPENROUTER_MODEL
   temperature: 0.3
-  max_completion_tokens: 2000
+  max_completion_tokens: 4096
     │
     ▼
 Return response to client → render as Markdown

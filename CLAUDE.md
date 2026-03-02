@@ -1,6 +1,6 @@
 # CLAUDE.md - TicketWise
 
-TicketWise is an AI-powered assistant for ConnectWise PSA technicians. It runs as an iframe pod inside CW service tickets, using OpenRouter for LLM inference (via the OpenRouter-compatible SDK client client). Built with Next.js 15, React 19, TypeScript, and Tailwind CSS 4.
+TicketWise is an AI-powered assistant for ConnectWise PSA technicians. It runs as an iframe pod inside CW service tickets, using OpenRouter for LLM inference (via the OpenRouter-compatible SDK client). Built with Next.js 15, React 19, TypeScript, and Tailwind CSS 4.
 
 ## Quick Start
 
@@ -54,6 +54,8 @@ Edit `SYSTEM_PROMPT` in `src/lib/ai.ts`. The prompt enforces British English, Ma
 - **Cookie SameSite**: Must be `"none"` + `secure: true` for cross-site iframe cookies to work.
 - **Rate limiting**: In-memory only (30 req/min/member). Does not survive restarts or work across multiple instances.
 - **OpenRouter-compatible SDK client**: We use the `openai` npm package but point it at OpenRouter. This is intentional for compatibility with OpenRouter-compatible APIs.
+- **Clipboard in iframes**: `navigator.clipboard` API is blocked in cross-origin iframes. Use `document.execCommand('copy')` with range selection instead — copies rich text (HTML formatting preserved).
+- **Reasoning models**: Models like `kimi-k2.5` spend most completion tokens on internal reasoning. `max_completion_tokens` must be high enough (4096+) to leave room for content output after reasoning, especially on complex prompts like `/5whys` with large ticket contexts.
 - **Similar ticket search**: Extracts keywords from summary, filters stop words, searches CW with `like` conditions. Results sorted closed-first.
 - **Report API**: Used for config ticket history (`/system/reports/Service`) because it supports querying by `config_recids` — the main tickets API doesn't.
 

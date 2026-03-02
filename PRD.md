@@ -42,6 +42,7 @@ IT service desk technicians spend significant time reading through ticket notes,
 
 - Free-text questions about the current ticket
 - Markdown-rendered AI responses
+- **Copy to clipboard** button on every AI response (copies as rich text for Outlook/Teams)
 - Conversation history maintained per session
 - Auto-complete dropdown when typing `/`
 
@@ -56,7 +57,7 @@ All ConnectWise API calls use the logged-in technician's permissions via member 
 | Framework | Next.js 15 (App Router) |
 | UI | React 19, Tailwind CSS 4 |
 | Language | TypeScript (strict) |
-| LLM | OpenRouter API (using OpenRouter-compatible SDK client as client) |
+| LLM | OpenRouter API (using OpenRouter-compatible SDK client) |
 | Default Model | `moonshotai/kimi-k2.5:nitro` via OpenRouter |
 | Validation | Zod |
 | Markdown | react-markdown |
