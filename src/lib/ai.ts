@@ -2,7 +2,12 @@ import OpenAI from "openai";
 import { env } from "./env";
 
 const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": "https://ticketwise.ingeniotech.co.uk",
+    "X-Title": "TicketWise",
+  },
 });
 
 // ============ System Prompts ============
@@ -194,7 +199,7 @@ export async function chat(
   }
 
   const completion = await openai.chat.completions.create({
-    model: env.OPENAI_MODEL,
+    model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,
     max_completion_tokens: 2000,
@@ -212,11 +217,11 @@ export async function* chatStream(
 ): AsyncGenerator<string> {
   // Build context message
   let contextMessage = `# Current Ticket\n\n${options.ticketContext}`;
-  
+
   if (options.similarTickets) {
     contextMessage += `\n\n# Similar Tickets\n\n${options.similarTickets}`;
   }
-  
+
   if (options.configHistory) {
     contextMessage += `\n\n# Configuration History\n\n${options.configHistory}`;
   }
@@ -239,7 +244,7 @@ export async function* chatStream(
         continue;
       }
     }
-    
+
     apiMessages.push({
       role: msg.role,
       content: msg.content,
@@ -247,7 +252,7 @@ export async function* chatStream(
   }
 
   const stream = await openai.chat.completions.create({
-    model: env.OPENAI_MODEL,
+    model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,
     max_completion_tokens: 2000,

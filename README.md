@@ -29,7 +29,7 @@ AI-powered ticket assistant for ConnectWise PSA. Helps service desk technicians 
 
 - ConnectWise PSA instance (cloud or on-prem)
 - ConnectWise Developer Client ID ([register here](https://developer.connectwise.com/ClientId))
-- OpenAI API key
+- OpenRouter API key ([sign up here](https://openrouter.ai))
 - Node.js 20+
 
 ### Environment Variables
@@ -42,9 +42,9 @@ CW_CLIENT_ID=your-connectwise-client-id
 CW_COMPANY_URL=eu.myconnectwise.net
 CW_CODE_BASE=v4_6_release
 
-# OpenAI
-OPENAI_API_KEY=sk-your-openai-api-key
-OPENAI_MODEL=gpt-4o
+# OpenRouter (https://openrouter.ai)
+OPENROUTER_API_KEY=sk-or-v1-your-openrouter-api-key
+OPENROUTER_MODEL=moonshotai/kimi-k2.5:nitro
 ```
 
 ### Installation
@@ -107,7 +107,7 @@ src/
 ├── hooks/
 │   └── use-hosted-api.ts   # ConnectWise iframe communication
 ├── lib/
-│   ├── ai.ts           # OpenAI integration
+│   ├── ai.ts           # OpenRouter LLM integration
 │   ├── connectwise.ts  # CW API client
 │   └── env.ts          # Environment validation
 └── actions/            # Server actions

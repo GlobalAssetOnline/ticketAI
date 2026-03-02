@@ -14,7 +14,7 @@
 - `HOSTNAME=0.0.0.0` — required so Next.js binds to all interfaces (not just container hostname)
 - `NIXPACKS_NODE_VERSION` — pinned Node version
 - CW credentials: `CW_CLIENT_ID`, `CW_COMPANY_URL`, `CW_CODE_BASE`, `CW_COMPANY_ID`, `CW_PUBLIC_KEY`, `CW_PRIVATE_KEY`
-- `OPENAI_API_KEY`, `OPENAI_MODEL`
+- `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`
 
 ## ⚠️ Critical: Do NOT change the start command
 

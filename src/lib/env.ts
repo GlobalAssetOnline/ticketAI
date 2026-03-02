@@ -9,9 +9,9 @@ const envSchema = z.object({
   CW_PUBLIC_KEY: z.string().min(1, "ConnectWise Public API Key required"),
   CW_PRIVATE_KEY: z.string().min(1, "ConnectWise Private API Key required"),
   
-  // OpenAI
-  OPENAI_API_KEY: z.string().min(1, "OpenAI API key required"),
-  OPENAI_MODEL: z.string().default("gpt-4o"),
+  // OpenRouter
+  OPENROUTER_API_KEY: z.string().min(1, "OpenRouter API key required"),
+  OPENROUTER_MODEL: z.string().default("moonshotai/kimi-k2.5:nitro"),
   
   // App
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
