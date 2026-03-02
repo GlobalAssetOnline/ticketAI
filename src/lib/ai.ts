@@ -1,7 +1,7 @@
-import OpenAI from "openai";
+import OpenRouterClient from "openai";
 import { env } from "./env";
 
-const openai = new OpenAI({
+const llmClient = new OpenRouterClient({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: env.OPENROUTER_API_KEY,
   defaultHeaders: {
@@ -173,7 +173,7 @@ export async function chat(
   }
 
   // Build messages array
-  const apiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+  const apiMessages: import("openai/resources/chat/completions").ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "system", content: contextMessage },
   ];
@@ -198,7 +198,7 @@ export async function chat(
     });
   }
 
-  const completion = await openai.chat.completions.create({
+  const completion = await llmClient.chat.completions.create({
     model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,
@@ -227,7 +227,7 @@ export async function* chatStream(
   }
 
   // Build messages array
-  const apiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+  const apiMessages: import("openai/resources/chat/completions").ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "system", content: contextMessage },
   ];
@@ -251,7 +251,7 @@ export async function* chatStream(
     });
   }
 
-  const stream = await openai.chat.completions.create({
+  const stream = await llmClient.chat.completions.create({
     model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,

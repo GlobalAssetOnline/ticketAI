@@ -87,11 +87,11 @@ If /config: getConfigurationTickets()
   └── Report API query by config_recids
     │
     ▼
-Build OpenAI API messages:
+Build LLM chat messages:
   [system prompt, ticket context, conversation history, slash command prompt]
     │
     ▼
-OpenRouter API call (via OpenAI SDK)
+OpenRouter API call (via OpenRouter-compatible SDK client)
   model: OPENROUTER_MODEL
   temperature: 0.3
   max_completion_tokens: 2000

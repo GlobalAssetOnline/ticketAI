@@ -1,6 +1,6 @@
 # CLAUDE.md - TicketWise
 
-TicketWise is an AI-powered assistant for ConnectWise PSA technicians. It runs as an iframe pod inside CW service tickets, using OpenRouter for LLM inference (via the OpenAI SDK client). Built with Next.js 15, React 19, TypeScript, and Tailwind CSS 4.
+TicketWise is an AI-powered assistant for ConnectWise PSA technicians. It runs as an iframe pod inside CW service tickets, using OpenRouter for LLM inference (via the OpenRouter-compatible SDK client client). Built with Next.js 15, React 19, TypeScript, and Tailwind CSS 4.
 
 ## Quick Start
 
@@ -18,7 +18,7 @@ The app requires a ConnectWise iframe context to authenticate. Running standalon
 - **Server actions** (`actions/auth.ts`, `actions/chat.ts`, `actions/ticket.ts`): All CW API calls, cookie management, AI calls
 - **Libraries** (`lib/ai.ts`, `lib/connectwise.ts`, `lib/env.ts`, `lib/format.ts`): OpenRouter client, CW REST client, env validation, data formatting
 
-AI calls go through OpenRouter (not OpenAI directly). The OpenAI SDK is used as the HTTP client with `baseURL: "https://openrouter.ai/api/v1"`.
+AI calls go through OpenRouter (not legacy provider endpoints). The OpenRouter-compatible SDK client is used as the HTTP client with `baseURL: "https://openrouter.ai/api/v1"`.
 
 ## Common Tasks
 
@@ -53,7 +53,7 @@ Edit `SYSTEM_PROMPT` in `src/lib/ai.ts`. The prompt enforces British English, Ma
 - **X-Frame-Options**: Next.js 15 defaults to `SAMEORIGIN`, which blocks CW iframe embedding. Overridden in both `next.config.ts` and `middleware.ts`.
 - **Cookie SameSite**: Must be `"none"` + `secure: true` for cross-site iframe cookies to work.
 - **Rate limiting**: In-memory only (30 req/min/member). Does not survive restarts or work across multiple instances.
-- **OpenAI SDK**: We use the `openai` npm package but point it at OpenRouter. This is intentional — OpenRouter is API-compatible with OpenAI.
+- **OpenRouter-compatible SDK client**: We use the `openai` npm package but point it at OpenRouter. This is intentional — OpenRouter is API-compatible with OpenAI.
 - **Similar ticket search**: Extracts keywords from summary, filters stop words, searches CW with `like` conditions. Results sorted closed-first.
 - **Report API**: Used for config ticket history (`/system/reports/Service`) because it supports querying by `config_recids` — the main tickets API doesn't.
 

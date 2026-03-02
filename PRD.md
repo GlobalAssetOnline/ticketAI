@@ -56,7 +56,7 @@ All ConnectWise API calls use the logged-in technician's permissions via member 
 | Framework | Next.js 15 (App Router) |
 | UI | React 19, Tailwind CSS 4 |
 | Language | TypeScript (strict) |
-| LLM | OpenRouter API (using OpenAI SDK as client) |
+| LLM | OpenRouter API (using OpenRouter-compatible SDK client as client) |
 | Default Model | `moonshotai/kimi-k2.5:nitro` via OpenRouter |
 | Validation | Zod |
 | Markdown | react-markdown |
