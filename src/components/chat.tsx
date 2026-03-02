@@ -176,12 +176,26 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[85%] rounded-lg px-3 py-2 ${
+              className={`relative group max-w-[85%] rounded-lg px-3 py-2 ${
                 msg.role === "user"
                   ? "bg-[#222E40] text-white"
                   : "bg-gray-100 text-gray-900"
               }`}
             >
+              {msg.role === "assistant" && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(msg.content);
+                    const btn = document.getElementById(`copy-${msg.id}`);
+                    if (btn) { btn.textContent = "✓"; setTimeout(() => btn.textContent = "📋", 1500); }
+                  }}
+                  id={`copy-${msg.id}`}
+                  title="Copy to clipboard"
+                  className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity text-xs px-1.5 py-0.5 rounded bg-white/80 hover:bg-white text-gray-500 hover:text-gray-700 shadow-sm"
+                >
+                  📋
+                </button>
+              )}
               {msg.slashCommand && (
                 <div className="text-xs opacity-60 mb-1">
                   {msg.slashCommand}
