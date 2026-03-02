@@ -28,7 +28,7 @@ AI calls go through OpenRouter (not legacy provider endpoints). The OpenRouter-c
 3. The command auto-appears in the UI dropdown — no changes needed in `chat.tsx`
 
 ### Change the LLM model
-Set `OPENROUTER_MODEL` env var to any model available on OpenRouter (e.g. `anthropic/claude-sonnet-4`, `openai/gpt-4o`).
+Set `OPENROUTER_MODEL` env var to any model available on OpenRouter (e.g. `anthropic/claude-sonnet-4`, `moonshotai/kimi-k2.5:nitro`).
 
 ### Add a new CW API endpoint
 1. Add types to `src/lib/connectwise.ts`
@@ -53,7 +53,7 @@ Edit `SYSTEM_PROMPT` in `src/lib/ai.ts`. The prompt enforces British English, Ma
 - **X-Frame-Options**: Next.js 15 defaults to `SAMEORIGIN`, which blocks CW iframe embedding. Overridden in both `next.config.ts` and `middleware.ts`.
 - **Cookie SameSite**: Must be `"none"` + `secure: true` for cross-site iframe cookies to work.
 - **Rate limiting**: In-memory only (30 req/min/member). Does not survive restarts or work across multiple instances.
-- **OpenRouter-compatible SDK client**: We use the `openai` npm package but point it at OpenRouter. This is intentional — OpenRouter is API-compatible with OpenAI.
+- **OpenRouter-compatible SDK client**: We use the `openai` npm package but point it at OpenRouter. This is intentional for compatibility with OpenRouter-compatible APIs.
 - **Similar ticket search**: Extracts keywords from summary, filters stop words, searches CW with `like` conditions. Results sorted closed-first.
 - **Report API**: Used for config ticket history (`/system/reports/Service`) because it supports querying by `config_recids` — the main tickets API doesn't.
 
