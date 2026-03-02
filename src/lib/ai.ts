@@ -202,10 +202,17 @@ export async function chat(
     model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,
-    max_completion_tokens: 2000,
+    max_completion_tokens: 4096,
   });
 
-  return completion.choices[0]?.message?.content || "I couldn't generate a response. Please try again.";
+  // Reasoning models (e.g. kimi-k2.5) spend most completion tokens on internal
+  // reasoning, which can leave content empty on complex prompts like /5whys.
+  const content = completion.choices[0]?.message?.content;
+  if (content) return content;
+
+  console.error("Empty AI content. Finish reason:", completion.choices[0]?.finish_reason,
+    "Usage:", JSON.stringify(completion.usage));
+  return "I couldn't generate a response — the model may have run out of tokens. Please try again.";
 }
 
 /**
@@ -255,7 +262,7 @@ export async function* chatStream(
     model: env.OPENROUTER_MODEL,
     messages: apiMessages,
     temperature: 0.3,
-    max_completion_tokens: 2000,
+    max_completion_tokens: 4096,
     stream: true,
   });
 
