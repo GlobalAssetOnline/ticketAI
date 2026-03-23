@@ -11,14 +11,14 @@
 │  │                                             │    │
 │  │  ┌───────────────────────────────────────┐  │    │
 │  │  │  TicketWise Pod (iframe)              │  │    │
-│  │  │  https://ticketwise.ingeniotech.co.uk │  │    │
+│  │  │  https://your-domain.com              │  │    │
 │  │  └───────────────┬───────────────────────┘  │    │
 │  └──────────────────┼──────────────────────────┘    │
 │                     │ postMessage                    │
 └─────────────────────┼───────────────────────────────┘
                       │
          ┌────────────▼────────────┐
-         │  Next.js App (Coolify)  │
+         │  Next.js App            │
          │  Server Actions         │
          │                         │
          │  ┌───────┐ ┌─────────┐  │
@@ -91,8 +91,8 @@ Build LLM chat messages:
   [system prompt, ticket context, conversation history, slash command prompt]
     │
     ▼
-OpenRouter API call (via OpenRouter-compatible SDK client)
-  model: OPENROUTER_MODEL
+OpenRouter API call (via OpenAI-compatible SDK)
+  model: OPENROUTER_MODEL (default: moonshotai/kimi-k2.5:nitro)
   temperature: 0.3
   max_completion_tokens: 4096
     │
@@ -111,7 +111,7 @@ src/
 │
 ├── components/
 │   ├── pod.tsx                 # Pod wrapper — auth flow, loading/error states
-│   └── chat.tsx                # Chat UI — messages, input, slash command dropdown
+│   └── chat.tsx                # Chat UI — messages, input, slash command dropdown, copy
 │
 ├── hooks/
 │   └── use-hosted-api.ts       # CW postMessage handshake, origin validation
@@ -185,35 +185,4 @@ Results are sorted to prioritise closed/resolved tickets (they have solutions).
 | `OPENROUTER_API_KEY` | Yes | — | OpenRouter API key (`sk-or-v1-...`) |
 | `OPENROUTER_MODEL` | No | `moonshotai/kimi-k2.5:nitro` | LLM model identifier |
 | `NODE_ENV` | No | `development` | Environment mode |
-| `HOSTNAME` | Yes (prod) | — | Must be `0.0.0.0` for Coolify container |
-
-## Deployment
-
-### Infrastructure
-
-```
-GitHub (main branch)
-    │ push
-    ▼
-Coolify (ingcoolify / 100.99.183.58)
-    │ Nixpacks build
-    ▼
-Container (port 3000)
-    │
-    ▼
-Cloudflare Tunnel
-    │
-    ▼
-https://ticketwise.ingeniotech.co.uk
-```
-
-### Build Details
-
-- **Build system:** Nixpacks (auto-detects Node.js)
-- **Build command:** `npm run build` → `next build`
-- **Start command:** `npm start` → `next start` (NOT `node .next/standalone/server.js`)
-- **Node version:** 20 (pinned via `NIXPACKS_NODE_VERSION`)
-
-### Important: Start Command
-
-Keep `"start": "next start"` in package.json. Although Next.js warns about `output: "standalone"` + `next start`, it works under Nixpacks because Nixpacks handles static file serving. Using `node .next/standalone/server.js` breaks the app (static assets return 404).
+| `HOSTNAME` | Yes (prod) | — | Must be `0.0.0.0` for container binding |

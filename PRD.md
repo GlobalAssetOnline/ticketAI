@@ -57,19 +57,17 @@ All ConnectWise API calls use the logged-in technician's permissions via member 
 | Framework | Next.js 15 (App Router) |
 | UI | React 19, Tailwind CSS 4 |
 | Language | TypeScript (strict) |
-| LLM | OpenRouter API (using OpenRouter-compatible SDK client) |
+| LLM | OpenRouter API (via OpenAI-compatible SDK) |
 | Default Model | `moonshotai/kimi-k2.5:nitro` via OpenRouter |
 | Validation | Zod |
 | Markdown | react-markdown |
-| Hosting | Coolify (Nixpacks) |
-| CDN/Security | Cloudflare (TLS, HSTS) |
 
 ## Non-Functional Requirements
 
 ### Security
 - Origin-validated postMessage communication (CW domains only)
 - HTTP-only, Secure, SameSite=None cookies (required for cross-site iframe)
-- CSP `frame-ancestors *` to allow CW iframe embedding
+- CSP `frame-ancestors *` to allow CW iframe embedding (tighten in production)
 - No standalone access — shows "Pod Mode Only" outside CW
 - All CW API calls respect user permissions via member impersonation
 
@@ -78,14 +76,9 @@ All ConnectWise API calls use the logged-in technician's permissions via member 
 - In-memory rate limiter (single instance; Redis recommended for scale)
 
 ### Performance
-- AI responses via non-streaming completion (streaming implemented but not currently used in chat action)
 - Ticket context fetched in parallel (ticket + notes + configs via `Promise.all`)
 - Similar ticket search limited to 90-day window for company, 14-day for global
-
-### Deployment
-- Automatic builds on push to `main` via Coolify
-- Nixpacks auto-detects Node.js, builds with `next build`, starts with `next start`
-- Health check endpoint at `/api/health`
+- `max_completion_tokens: 4096` to allow reasoning models enough headroom
 
 ## Out of Scope (Current Version)
 
@@ -94,3 +87,4 @@ All ConnectWise API calls use the logged-in technician's permissions via member 
 - Ticket modification (read-only — no writing back to CW)
 - File/attachment analysis
 - Real-time ticket update notifications
+- Streaming responses (implemented but not currently used in chat action)

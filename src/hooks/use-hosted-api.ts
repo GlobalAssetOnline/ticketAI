@@ -84,13 +84,11 @@ export function useHostedApi(options: UseHostedApiOptions = {}): UseHostedApiRet
       delete (cwPayload as any).request;
     }
     const payloadStr = JSON.stringify(cwPayload);
-    console.log("[TicketWise] postMessage TO parent:", payloadStr, "targetOrigin:", targetOrigin);
     window.parent.postMessage(payloadStr, targetOrigin);
   }, []);
 
   // Request member authentication from CW
   const requestAuth = useCallback(() => {
-    console.log("[TicketWise] Requesting auth from CW parent, frameId:", frameIdRef.current);
     postToParent({ request: "getMemberAuthentication" });
   }, [postToParent]);
 
@@ -112,13 +110,6 @@ export function useHostedApi(options: UseHostedApiOptions = {}): UseHostedApiRet
     if (messageListenerRef.current) return;
 
     const handleMessage = (event: MessageEvent) => {
-      // Debug: log all incoming postMessages
-      console.log("[TicketWise] postMessage received:", {
-        origin: event.origin,
-        data: typeof event.data === "string" ? event.data.substring(0, 200) : event.data,
-        allowed: ALLOWED_ORIGINS.some(origin => event.origin.startsWith(origin)),
-      });
-      
       // Validate origin - only accept messages from ConnectWise domains
       if (!ALLOWED_ORIGINS.some(origin => event.origin.startsWith(origin))) {
         return; // Silently ignore messages from unknown origins
@@ -212,10 +203,7 @@ export function useHostedApi(options: UseHostedApiOptions = {}): UseHostedApiRet
 
     // Send ready message to parent
     if (window !== window.parent) {
-      console.log("[TicketWise] Sending ready message to parent. window.parent:", window.parent !== window);
       window.parent.postMessage(JSON.stringify({ message: "ready" }), "*");
-    } else {
-      console.log("[TicketWise] Running standalone (no parent frame)");
     }
 
     return () => {

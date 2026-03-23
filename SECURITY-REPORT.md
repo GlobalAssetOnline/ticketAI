@@ -1,8 +1,6 @@
 # TicketWise Security Assessment Report
 
-**Date:** 2026-02-06 (Updated: 2026-02-07)
-**Target:** https://ticketwise.ingeniotech.co.uk
-**Assessor:** Stavros (AI Security Review)
+**Date:** 2026-02-06 (initial) • 2026-02-07 (updated)
 
 ---
 
@@ -10,110 +8,94 @@
 
 Overall security posture is **GOOD**. All high and medium priority findings have been remediated.
 
-| Severity | Count |
-|----------|-------|
-| 🔴 Critical | 0 |
-| 🟠 High | 0 ✅ (was 1) |
-| 🟡 Medium | 0 ✅ (was 3) |
-| 🔵 Low | 4 |
-| ℹ️ Info | 3 |
+| Severity | Original | Current |
+|----------|----------|---------|
+| 🔴 Critical | 0 | 0 |
+| 🟠 High | 1 | 0 ✅ |
+| 🟡 Medium | 3 | 0 ✅ |
+| 🔵 Low | 4 | 4 |
+| ℹ️ Info | 3 | 3 |
 
 ---
 
 ## Resolved Findings
 
-### ✅ RESOLVED: PostMessage Origin Validation
+### ✅ PostMessage Origin Validation (was HIGH)
 
-**Status:** FIXED (2026-02-07)
+Origin validation implemented in `src/hooks/use-hosted-api.ts`. Only accepts messages from known ConnectWise domains (`eu.myconnectwise.net`, `na.myconnectwise.net`, `au.myconnectwise.net`, `staging.connectwisedev.com`). Messages from unknown origins are silently dropped.
 
-Origin validation implemented in `src/hooks/use-hosted-api.ts`:
-```javascript
-const ALLOWED_ORIGINS = [
-  "https://eu.myconnectwise.net",
-  "https://na.myconnectwise.net",
-  "https://au.myconnectwise.net",
-  "https://staging.connectwisedev.com",
-];
-```
+### ✅ Security Headers (was MEDIUM)
 
----
+All recommended headers implemented in `src/middleware.ts`:
+- `X-Content-Type-Options: nosniff`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- `Content-Security-Policy: frame-ancestors *` (tighten per deployment)
 
-### ✅ RESOLVED: Security Headers
+### ✅ TLS 1.0/1.1 (was MEDIUM)
 
-**Status:** FIXED
+Infrastructure-level fix — set minimum TLS 1.2 at your edge proxy (Cloudflare, Azure, etc.).
 
-All security headers implemented in `src/middleware.ts`:
+### ✅ Rate Limiting (was MEDIUM)
 
-| Header | Status |
-|--------|--------|
-| `X-Content-Type-Options: nosniff` | ✅ |
-| `X-XSS-Protection: 1; mode=block` | ✅ |
-| `Referrer-Policy: strict-origin-when-cross-origin` | ✅ |
-| `Permissions-Policy: camera=(), microphone=(), geolocation=()` | ✅ |
-| `Content-Security-Policy: frame-ancestors *` | ✅ |
-| HSTS | ✅ (Cloudflare) |
-
----
-
-### ✅ RESOLVED: TLS 1.0/1.1 (Cloudflare)
-
-**Status:** FIXED (2026-02-07)
-
-Minimum TLS version set to 1.2 across all Cloudflare zones.
-
----
-
-### ✅ RESOLVED: Rate Limiting
-
-**Status:** IMPLEMENTED
-
-Rate limiting: 30 requests per minute per member.
+30 requests per minute per authenticated member. In-memory implementation.
 
 ---
 
 ## Remaining Low Priority Findings
 
-### 🔵 LOW: Cookie Security - SameSite=None
+### 🔵 LOW: Cookie SameSite=None
 
-Cookies use `sameSite: "none"` which is required for cross-site iframe usage. Mitigated by `httpOnly: true` and `secure: true`.
-
----
+Required for cross-site iframe usage. Mitigated by `httpOnly: true` and `secure: true`.
 
 ### 🔵 LOW: No CSRF Protection
 
-No CSRF tokens implemented. Low risk since standalone access is blocked and cookies require CW context.
-
----
+Low risk since standalone access is blocked and cookies require the CW iframe context.
 
 ### 🔵 LOW: Technology Stack Disclosure
 
 404 page reveals Next.js framework. Minimal risk.
 
----
+### 🔵 LOW: CSP frame-ancestors Too Permissive
 
-### 🔵 LOW: API Key Permissions Too Broad
-
-**Recommendation:** Create a dedicated API member with minimal permissions (Service Tickets: Read, Configurations: Read).
+`frame-ancestors *` is set for broad compatibility. In production, tighten to `frame-ancestors https://*.myconnectwise.net https://your-domain.com`.
 
 ---
 
-## Cloudflare Security (Updated 2026-02-07)
+## Positive Security Properties
 
-Applied to ingeniotech.co.uk:
-
-- ✅ Minimum TLS 1.2
-- ✅ HSTS enabled (6 months, includeSubDomains)
-- ✅ Always Use HTTPS
-- ✅ SSL Mode: Full
-- ⏳ Bot Fight Mode (dashboard only)
-- ⏳ DNSSEC (requires registrar update)
-
----
-
-## Summary
-
-All HIGH and MEDIUM findings have been resolved. Remaining items are low priority hardening measures.
+- ✅ No secrets in client bundles — env vars are server-side only (Zod validated)
+- ✅ Standalone access blocked — shows "Pod Mode Only" outside CW iframe
+- ✅ Member impersonation — all CW API calls use logged-in user's permissions
+- ✅ HTTP-only cookies — auth tokens not accessible to JavaScript
+- ✅ Zod validation on postMessage payloads and env vars
+- ✅ Non-root Docker container
+- ✅ Read-only — no write operations to ConnectWise
 
 ---
 
-*Last updated: 2026-02-07 by Stavros*
+## Recommendations for Deployers
+
+1. Tighten CSP `frame-ancestors` to your ConnectWise domain + your app domain
+2. Enforce TLS 1.2+ at your edge/reverse proxy
+3. Add Cloudflare Access / Azure AD for org-level authentication
+4. Create a restricted CW API member with read-only permissions
+5. Monitor AI API usage for cost control
+
+---
+
+## Tests Performed
+
+- Security header analysis
+- Port scan + TLS cipher enumeration
+- Web vulnerability scanning
+- XSS injection testing
+- API input validation testing
+- Source code review (secrets, auth flows, postMessage)
+- JavaScript bundle analysis
+- Authentication flow review
+
+---
+
+*Report generated by security assessment.*
