@@ -119,7 +119,7 @@ No write access is needed — TicketWise is read-only.
 ### Installation
 
 ```bash
-git clone https://github.com/your-org/ticketwise.git
+git clone https://github.com/Ingenio-Tech/ticketwise.git
 cd ticketwise
 npm install
 npm run dev

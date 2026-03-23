@@ -5,7 +5,7 @@ const llmClient = new OpenRouterClient({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: env.OPENROUTER_API_KEY,
   defaultHeaders: {
-    "HTTP-Referer": "https://github.com/your-org/ticketwise",
+    "HTTP-Referer": "https://github.com/Ingenio-Tech/ticketwise",
     "X-Title": "TicketWise",
   },
 });
