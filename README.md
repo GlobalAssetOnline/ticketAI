@@ -1,6 +1,6 @@
 # TicketWise 🎫
 
-An open-source AI assistant that lives inside ConnectWise PSA as a pod on the service ticket screen. It gives technicians instant ticket summaries, troubleshooting suggestions, similar ticket lookups, and device history — all without leaving the ticket they're working on.
+An open-source AI chat assistant that lives inside ConnectWise PSA as a pod on the service ticket screen. Technicians can chat naturally about the ticket they're viewing — ask questions, get context, work through problems — and use slash commands for common tasks like summaries, similar ticket searches, and troubleshooting suggestions. All without leaving the ticket.
 
 ## The Problem
 
@@ -15,29 +15,34 @@ TicketWise embeds as a pod (iframe) directly in the ConnectWise service ticket s
 1. **Authenticates automatically** via ConnectWise's [Hosted API](https://developer.connectwise.com/Products/Manage/Hosted_APIs) (`postMessage`) — no separate login
 2. **Pulls full ticket context** — summary, notes, configurations, custom fields — using the CW REST API
 3. **Respects user permissions** — API calls use member impersonation, so techs only see what they're allowed to
-4. **Sends context to an LLM** with carefully tuned prompts for each command (summary, suggest, similar, etc.)
-5. **Returns the response** in a chat interface inside the pod
+4. **Opens a chat interface** where the tech can ask anything about the ticket in plain English
+5. **Sends context to an LLM** and streams the response back with Markdown formatting
 
-The entire conversation stays contextual to the ticket. Slash commands trigger specialised prompts — for example, `/similar` fetches matching tickets from the same company (90 days) and globally (14 days), pulls their notes to find buried resolutions, and asks the AI to identify genuinely relevant matches rather than keyword noise.
+The chat is conversational — ask follow-up questions, request clarification, work through a problem step by step. Slash commands (like `/summary`, `/similar`, `/config`) are shortcuts that trigger specialised prompts for common tasks. For example, `/similar` fetches matching tickets from the same company (90 days) and globally (14 days), pulls their notes to find buried resolutions, and asks the AI to identify genuinely relevant matches rather than keyword noise.
 
 ### AI Model
 
 TicketWise uses the **OpenAI-compatible SDK** pointed at [OpenRouter](https://openrouter.ai), which gives you access to hundreds of models with a single API key.
 
-We run it with **`moonshotai/kimi-k2.5:nitro`** — a reasoning model chosen for the balance of speed and accuracy in a pod context where technicians are waiting. Kimi K2.5 handles ticket analysis well: it reasons through the notes to find actual resolutions rather than just echoing the summary. The `:nitro` variant keeps latency low. The prompts are model-agnostic, so swap in whatever works for you — `anthropic/claude-sonnet-4`, `openai/gpt-4o`, or anything else OpenRouter supports.
+We run it with **`moonshotai/kimi-k2.5:nitro`** — a reasoning model chosen for the balance of speed and accuracy in a pod context where technicians are waiting. Kimi K2.5 handles ticket analysis well: it reasons through the notes to find actual resolutions rather than just echoing the summary. The `:nitro` variant keeps latency low. The prompts are model-agnostic, so swap in whatever works for you.
 
 Temperature is set to `0.3` for factual, consistent responses. `max_completion_tokens` is `4096` to give reasoning models enough headroom (they spend tokens on internal reasoning before producing output). The system prompt enforces strict rules: only reference information explicitly in the ticket data, never invent names/dates/steps, and use British English.
 
 ## Data Flow & Privacy
 
 ```
-ConnectWise PSA  →  Your TicketWise Server  →  OpenRouter  →  Back to Browser
-   (CW API)          (Next.js server)         (LLM API)     (response rendered)
+ConnectWise PSA  →  Your TicketWise Server  →  LLM Provider  →  Back to Browser
+   (CW API)          (Next.js server)         (OpenRouter /    (response rendered)
+                                               Azure / local)
 ```
 
 - **No data is stored.** Chat history lives in React state (browser memory) and is gone when you close/refresh the tab.
 - **No logging of ticket content.** Server-side processing is stateless.
-- **Ticket data is sent to your configured LLM provider** for each request. Choose a provider whose data handling policies you're comfortable with.
+- **Ticket data is sent to your configured LLM provider** for each request. Be aware of where the underlying model is hosted — OpenRouter routes to various providers, and the model you choose determines which company processes your data.
+- **OpenRouter does not store prompts or completions by default**, but the LLM hosting company behind your chosen model has its own data policies. Check the model provider's terms.
+- **If data residency matters** (e.g. GDPR, keeping data in the EU/UK), consider:
+  - **Azure OpenAI** — lets you choose your region (UK South, West Europe, etc.) and keeps data within that region. Change the `baseURL` and `apiKey` in `src/lib/ai.ts` to point at your Azure OpenAI endpoint.
+  - **Local/self-hosted models** — run an OpenAI-compatible model server (Ollama, vLLM, LiteLLM) and point TicketWise at it. Data never leaves your network.
 - **You are responsible** for compliance with your own data protection obligations (GDPR, client agreements, etc.). TicketWise is a tool — how you deploy it and where you send data is your decision.
 
 ## Features
@@ -99,7 +104,7 @@ NODE_ENV=production
 HOSTNAME=0.0.0.0
 ```
 
-> **Using a different LLM provider?** The app uses the OpenAI SDK pointed at OpenRouter's base URL. To use OpenAI directly, Azure OpenAI, or another compatible provider, change the `baseURL` and `apiKey` in `src/lib/ai.ts`.
+> **Using a different LLM provider?** The app uses the OpenAI SDK pointed at OpenRouter's base URL. To use Azure OpenAI, a local model server, or another compatible provider, change the `baseURL` and `apiKey` in `src/lib/ai.ts`. For Azure OpenAI, your base URL will look like `https://your-resource.openai.azure.com/openai/deployments/your-deployment` — see the [Azure OpenAI docs](https://learn.microsoft.com/en-us/azure/ai-services/openai/reference).
 
 ### ConnectWise API Member
 
@@ -150,9 +155,9 @@ TicketWise handles ConnectWise ticket data, which may include client names, cont
   - SSL/TLS → Minimum TLS Version → TLS 1.2
   - SSL/TLS → Always Use HTTPS → On
   - Security → WAF → Managed rules enabled
-- **Add Cloudflare Access** (or equivalent) to restrict the app to your organisation — this is the single most important security step
-
 Any host that runs Docker or Node.js 20 works: a VPS, Azure App Service, AWS, Coolify, Unraid — your choice. The app is lightweight and stateless.
+
+> **⚠️ Cloudflare Access / Zero Trust:** You **cannot** put Cloudflare Access in front of TicketWise. The pod loads inside a ConnectWise iframe, and CF Access would challenge the iframe load with a login redirect — which breaks inside iframes. The pod's security comes from ConnectWise's own authentication (postMessage handshake + member impersonation) and the origin validation built into the app. Tightening `frame-ancestors` in CSP (see Security section) is the correct way to restrict who can embed it.
 
 ### Docker
 
@@ -211,11 +216,12 @@ TicketWise is designed to be safe by default, but **you are responsible for secu
 - Security headers: CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 
 **What you need to do:**
-- **Restrict `frame-ancestors`** — change `frame-ancestors *` to `frame-ancestors https://*.myconnectwise.net https://your-domain.com` in `next.config.ts` and `middleware.ts`
-- **Add an auth layer** — Cloudflare Access, Azure AD App Proxy, or similar, so only your org can reach the app
+- **Restrict `frame-ancestors`** — change `frame-ancestors *` to `frame-ancestors https://*.myconnectwise.net https://your-domain.com` in `next.config.ts` and `middleware.ts`. This is the primary way to control who can embed the pod.
 - **Use a restricted CW API member** — read-only access to service tickets, configurations, and reports only
 - **Enforce TLS 1.2+** at your edge/reverse proxy
 - **Review the [Security Report](SECURITY-REPORT.md)** for the full assessment
+
+> **Note:** Traditional auth layers like Cloudflare Access or Azure AD App Proxy **cannot** be used here — they break iframe-based pods. The security model relies on CW's own authentication (postMessage handshake), member impersonation, origin validation, and CSP `frame-ancestors`.
 
 > **Disclaimer:** This software is provided as-is under the MIT licence. It is not production-hardened out of the box. You are responsible for securing your deployment, managing API credentials, and ensuring compliance with your data protection obligations. The authors accept no liability for security incidents arising from your use of this software.
 

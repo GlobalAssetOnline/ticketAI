@@ -79,9 +79,10 @@ Low risk since standalone access is blocked and cookies require the CW iframe co
 
 1. Tighten CSP `frame-ancestors` to your ConnectWise domain + your app domain
 2. Enforce TLS 1.2+ at your edge/reverse proxy
-3. Add Cloudflare Access / Azure AD for org-level authentication
-4. Create a restricted CW API member with read-only permissions
-5. Monitor AI API usage for cost control
+3. Create a restricted CW API member with read-only permissions
+4. Monitor AI API usage for cost control
+
+> **Note:** Cloudflare Access / Azure AD App Proxy cannot be used — they break iframe-based CW pods. The security model relies on CW's own authentication, member impersonation, origin validation, and CSP `frame-ancestors`.
 
 ---
 
