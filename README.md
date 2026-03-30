@@ -2,6 +2,9 @@
 
 An open-source AI chat assistant that lives inside ConnectWise PSA as a pod on the service ticket screen. Technicians can chat naturally about the ticket they're viewing — ask questions, get context, work through problems — and use slash commands for common tasks like summaries, similar ticket searches, and troubleshooting suggestions. All without leaving the ticket.
 
+<img width="764" height="561" alt="image" src="https://github.com/user-attachments/assets/eecf824f-b14f-46f9-9090-48a481c825eb" />
+
+
 ## The Problem
 
 Service desk technicians waste significant time context-switching: reading through long ticket note threads, searching for similar past issues, checking whether a device has a recurring problem, and figuring out what to try next. The information exists in ConnectWise, but it's scattered across notes, configurations, and historical tickets.
