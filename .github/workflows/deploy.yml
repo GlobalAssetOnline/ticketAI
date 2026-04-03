@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 env:
-  AZURE_WEBAPP_NAME: your-webapp-name
+  AZURE_WEBAPP_NAME: ticketai
   NODE_VERSION: '20.x'
 
 jobs:
