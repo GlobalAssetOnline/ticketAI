@@ -32,7 +32,7 @@ jobs:
       - name: Copy static assets into standalone output
         run: |
           cp -r .next/static .next/standalone/.next/static
-          cp -r public .next/standalone/public
+          [ -d public ] && cp -r public .next/standalone/public || true
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
