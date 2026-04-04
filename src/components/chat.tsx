@@ -142,26 +142,47 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-        Authenticating with ConnectWise...
+      <div className="flex items-center justify-center h-full bg-gray-50 text-gray-500 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#222E40] border-t-[#DEDC00] rounded-full animate-spin" />
+          Authenticating with ConnectWise...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* Branded header */}
+      <div className="bg-[#222E40] px-3 py-2 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <svg className="w-4 h-4 text-[#DEDC00]" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+          </svg>
+          <span className="text-white text-sm font-semibold tracking-wide">TicketWise</span>
+        </div>
+        <span className="bg-[#DEDC00] text-[#222E40] text-xs font-bold px-2 py-0.5 rounded-full">
+          #{ticketId}
+        </span>
+      </div>
+
       {/* Messages area */}
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-3 space-y-3">
         {messages.length === 0 && (
-          <div className="text-center text-gray-400 text-sm py-8">
-            <p className="font-medium mb-2">Welcome to TicketWise</p>
-            <p>Ask me anything about this ticket, or try:</p>
-            <div className="flex flex-wrap justify-center gap-1 mt-2">
+          <div className="text-center py-8 px-4">
+            <div className="w-10 h-10 bg-[#222E40] rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-5 h-5 text-[#DEDC00]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+              </svg>
+            </div>
+            <p className="font-semibold text-[#222E40] mb-1">Welcome to TicketWise</p>
+            <p className="text-gray-500 text-xs mb-3">Ask me anything about this ticket, or try a command:</p>
+            <div className="flex flex-wrap justify-center gap-1.5 mt-2">
               {commands.slice(0, 4).map(cmd => (
                 <button
                   key={cmd.command}
                   onClick={() => handleCommandClick(cmd.command)}
-                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs transition-colors"
+                  className="px-2.5 py-1 border border-[#222E40] text-[#222E40] hover:bg-[#222E40] hover:text-white rounded text-xs font-mono font-medium transition-colors"
                 >
                   {cmd.command}
                 </button>
@@ -178,12 +199,12 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
             <div
               className={`max-w-[85%] rounded-lg px-3 py-2 ${
                 msg.role === "user"
-                  ? "bg-[#222E40] text-white"
-                  : "bg-gray-100 text-gray-900"
+                  ? "bg-[#222E40] text-white shadow-sm"
+                  : "bg-white border border-slate-200 text-gray-900 shadow-sm"
               }`}
             >
               {msg.slashCommand && (
-                <div className="text-xs opacity-60 mb-1">
+                <div className={`text-xs mb-1 font-mono ${msg.role === "user" ? "text-[#DEDC00]/80" : "text-[#824192]"}`}>
                   {msg.slashCommand}
                 </div>
               )}
@@ -219,7 +240,7 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
                       }
                       setTimeout(() => { btn.textContent = "📋 Copy"; }, 1500);
                     }}
-                    className="text-xs px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                    className="text-xs px-2 py-0.5 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                   >
                     📋 Copy
                   </button>
@@ -231,36 +252,36 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-3 py-2">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
+              <div className="flex space-x-1 items-center">
+                <div className="w-2 h-2 bg-[#F8AB08] rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-[#F8AB08] rounded-full animate-bounce [animation-delay:0.2s]" />
+                <div className="w-2 h-2 bg-[#F8AB08] rounded-full animate-bounce [animation-delay:0.4s]" />
               </div>
             </div>
           </div>
         )}
         
         {error && (
-          <div className="text-red-500 text-sm text-center">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg px-3 py-2 text-center">
             {error}
           </div>
         )}
       </div>
       
       {/* Input area */}
-      <div className="border-t p-2 relative">
+      <div className="border-t border-slate-200 bg-white p-2 relative">
         {/* Commands dropdown */}
         {showCommands && filteredCommands.length > 0 && (
-          <div className="absolute bottom-full left-2 right-2 mb-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          <div className="absolute bottom-full left-2 right-2 mb-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
             {filteredCommands.map(cmd => (
               <button
                 key={cmd.command}
                 onClick={() => handleCommandClick(cmd.command)}
-                className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2"
+                className="w-full text-left px-3 py-2 hover:bg-slate-50 border-l-2 border-l-transparent hover:border-l-[#222E40] flex items-center gap-2 transition-colors"
               >
-                <span className="font-mono text-sm text-[#222E40]">{cmd.command}</span>
-                <span className="text-xs text-gray-500">{cmd.description}</span>
+                <span className="font-mono text-sm text-[#222E40] font-medium">{cmd.command}</span>
+                <span className="text-xs text-gray-400">{cmd.description}</span>
               </button>
             ))}
           </div>
@@ -274,12 +295,12 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
             onChange={e => setInput(e.target.value)}
             placeholder="Ask about this ticket... (try /summary)"
             disabled={isLoading}
-            className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#222E40] focus:border-transparent disabled:bg-gray-50"
+            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#222E40] focus:border-transparent disabled:bg-gray-50 bg-white"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="px-4 py-2 bg-[#222E40] text-white rounded-lg text-sm font-medium hover:bg-[#1a2433] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-[#222E40] text-white rounded-lg text-sm font-medium hover:bg-[#1a2433] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Send
           </button>
