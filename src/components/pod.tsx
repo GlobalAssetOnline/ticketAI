@@ -172,7 +172,7 @@ export function Pod({ ticketId: propTicketId, screen: propScreen }: PodProps) {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col overflow-hidden">
       <Chat ticketId={ticketId} isAuthenticated={isAuthenticated} />
     </div>
   );
