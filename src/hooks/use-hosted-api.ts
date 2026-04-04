@@ -201,8 +201,9 @@ export function useHostedApi(options: UseHostedApiOptions = {}): UseHostedApiRet
     messageListenerRef.current = handleMessage;
     window.addEventListener("message", handleMessage);
 
-    // Send ready message to parent
+    // Send ready message to parent - send both formats for CW API compatibility
     if (window !== window.parent) {
+      window.parent.postMessage({ message: "ready" }, "*");
       window.parent.postMessage(JSON.stringify({ message: "ready" }), "*");
     }
 
