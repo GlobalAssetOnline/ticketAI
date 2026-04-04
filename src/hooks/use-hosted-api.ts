@@ -124,12 +124,15 @@ export function useHostedApi(options: UseHostedApiOptions = {}): UseHostedApiRet
         const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
         
         // Handle frame ID assignment (only process once)
-        if (data.MessageFrameID) {
-          if (frameIdRef.current === data.MessageFrameID) {
+        // CW may send the key as messageFrameID, MessageFrameID, or other casings
+        const frameIdKey = Object.keys(data).find(k => k.toLowerCase() === "messageframeid");
+        const frameId = frameIdKey ? data[frameIdKey] : undefined;
+        if (frameId) {
+          if (frameIdRef.current === frameId) {
             return; // Ignore duplicate
           }
-          frameIdRef.current = data.MessageFrameID;
-          setFrameId(data.MessageFrameID);
+          frameIdRef.current = frameId;
+          setFrameId(frameId);
           setIsReady(true);
           onReady?.();
           return;
