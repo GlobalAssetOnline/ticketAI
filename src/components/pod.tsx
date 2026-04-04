@@ -80,8 +80,8 @@ export function Pod({ ticketId: propTicketId, screen: propScreen }: PodProps) {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="bg-white rounded-xl shadow-lg max-w-md w-full text-center overflow-hidden">
           <div className="bg-[#222E40] px-8 py-6">
-            <div className="w-14 h-14 bg-[#DEDC00] rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg className="w-7 h-7 text-[#222E40]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 bg-[#F8AB08] rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-7 h-7 text-white" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
               </svg>
             </div>
@@ -110,7 +110,7 @@ export function Pod({ ticketId: propTicketId, screen: propScreen }: PodProps) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[#222E40] border-t-[#DEDC00] rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-2 border-[#222E40] border-t-[#F8AB08] rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm font-medium text-[#222E40]">
             {!isReady ? "Connecting to ConnectWise..." : "Loading ticket..."}
           </p>

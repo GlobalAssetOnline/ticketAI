@@ -144,7 +144,7 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-50 text-gray-500 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-[#222E40] border-t-[#DEDC00] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#222E40] border-t-[#F8AB08] rounded-full animate-spin" />
           Authenticating with ConnectWise...
         </div>
       </div>
@@ -156,12 +156,12 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
       {/* Branded header */}
       <div className="bg-[#222E40] px-3 py-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-[#DEDC00]" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-white" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
           </svg>
           <span className="text-white text-sm font-semibold tracking-wide">TicketWise</span>
         </div>
-        <span className="bg-[#DEDC00] text-[#222E40] text-xs font-bold px-2 py-0.5 rounded-full">
+        <span className="bg-[#F8AB08] text-white text-xs font-bold px-2 py-0.5 rounded-full">
           #{ticketId}
         </span>
       </div>
@@ -171,7 +171,7 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
         {messages.length === 0 && (
           <div className="text-center py-8 px-4">
             <div className="w-10 h-10 bg-[#222E40] rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg className="w-5 h-5 text-[#DEDC00]" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-white" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
               </svg>
             </div>
@@ -204,7 +204,7 @@ export function Chat({ ticketId, isAuthenticated }: ChatProps) {
               }`}
             >
               {msg.slashCommand && (
-                <div className={`text-xs mb-1 font-mono ${msg.role === "user" ? "text-[#DEDC00]/80" : "text-[#824192]"}`}>
+                <div className={`text-xs mb-1 font-mono ${msg.role === "user" ? "text-white/70" : "text-[#824192]"}`}>
                   {msg.slashCommand}
                 </div>
               )}
